@@ -6,7 +6,7 @@ This is a plugin for [Kirby](http://getkirby.com/) that loads images from the [I
 2. In order to interact with the Instagram API, you need to obtain an access token for yourself.
 3. Visit http://instagr.am/developer/client/register/ and register an application.
 4. Copy the Client-ID of the newly created app.
-5. Open `https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=http://albrecht.me/tools/params.php&response_type=token` in your browser, but replace CLIENT-ID with your client-id. **Note** The callback-url points to a simple ([open source](https://gist.github.com/1738919)) tool I wrote for better display of the params passed to a callback url.
+5. Visit `https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=http://albrecht.me/tools/params.php&response_type=token` in your browser, but replace CLIENT-ID with your client-id. **Note** The callback-url points to a simple ([open source](https://gist.github.com/1738919)) tool I wrote for better display of the params passed to a callback url.
 6. Copy the access_token and/or save it somewhere.
 7. Implement the plugin into your template.
 
