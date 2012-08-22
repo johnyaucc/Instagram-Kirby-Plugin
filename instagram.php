@@ -72,7 +72,7 @@ class instagram {
             
             // Process the images
             for ($i = 0; $i < $_count; $i++) {
-                if (!is_null($photos->data[$i]) && count($photos->data) > 0) {
+                if (isset($photos->data[$i]) && count($photos->data) > 0) {
                     
                     // Get the user's data from the first image
                     if ($i == 0) {
@@ -89,9 +89,9 @@ class instagram {
                     $this->images[$i]->url          = $photos->data[$i]->images->standard_resolution->url;
                     $this->images[$i]->image_lowres = $photos->data[$i]->images->low_resolution->url;
                     $this->images[$i]->filter       = $photos->data[$i]->filter;
-                    $this->images[$i]->location     = $photos->data[$i]->location->name;
-                    $this->images[$i]->latitude     = $photos->data[$i]->location->latitude;
-                    $this->images[$i]->longitude    = $photos->data[$i]->location->longitude;
+                    $this->images[$i]->location     = @$photos->data[$i]->location->name;
+                    $this->images[$i]->latitude     = @$photos->data[$i]->location->latitude;
+                    $this->images[$i]->longitude    = @$photos->data[$i]->location->longitude;
                     
                     // Process tags
                     for ($j = 0; $j < count($photos->data[$i]->tags); $j++) {

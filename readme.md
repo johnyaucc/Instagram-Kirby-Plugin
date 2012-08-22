@@ -4,11 +4,21 @@ This is a plugin for [Kirby](http://getkirby.com/) that loads images from the [I
 ## Installation
 1. Put the `instagram.php` file in your `site/plugins` folder. If this folder doesn't exist yet, create it.
 2. In order to interact with the Instagram API, you need to obtain an access token for yourself.
-3. Visit http://instagr.am/developer/client/register/ and register an application.
-4. Copy the Client-ID of the newly created app.
-5. Visit `https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=http://d.pr/ZO1g&response_type=token` in your browser, but replace CLIENT-ID with your client-id. **Note** The callback-url points to a simple ([open source](https://gist.github.com/1738919)) tool I wrote for better display of the params passed to a callback url.
-6. Copy the access token and/or save it somewhere.
-7. Implement the plugin into your template.
+3. Visit <http://instagram.com/developer/clients/manage/> and register an application.
+4. Set the OAuth redirect_uri to the main URL (i.e. http://yourdomain.com) of your website. 
+5. Copy the Client-ID of the newly created app.
+6. Visit: 
+
+		https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=http://yourdomain.com&response_type=token
+
+…in your browser, but replace CLIENT-ID with your client-id and YOURDOMAIN.COM with the OAuth redirect_uri you've entered while registering your app. 
+
+7. The browser will redirect you to your own website and in the address bar you will find your access token like this: 
+
+		http://yourdomain.com/#access_token=xxxxx.xxxxx.xxxxxxxxxxx
+
+8. Copy the access token (everything after =) and save it somewhere. 
+9. Implement the plugin into your template.
 
 ## Update instructions
 To update, just replace the old `instagram.php` file in `site/plugins`, with the new one.
