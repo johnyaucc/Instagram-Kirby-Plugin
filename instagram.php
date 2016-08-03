@@ -8,7 +8,7 @@
  * @param integer   How many seconds until the cache expires.
  * @param string    The user-id of the user of whom the photos should be loaded. 'self' is the default, which means that your own user ID will be inserted automatically by Instagram.
  * @return object   Object of class Instagram, that holds all the images.
-*/                    
+*/
 function instagram($token = '', $count = 10, $cache = true, $cache_expire = 3600, $user = 'self') {
     return new instagram($token, $count, $cache, $cache_expire, $user);
 }
@@ -20,7 +20,7 @@ function instagram($token = '', $count = 10, $cache = true, $cache_expire = 3600
  * @version 1.0
  * @copyright (c) 2012 Simon Albrecht
  */
-class instagram { 
+class instagram {
     var $images;
     var $user;
 
@@ -35,33 +35,33 @@ class instagram {
     function __construct($_token = '', $_count = 10, $_cache = true, $_cache_expire = 3600, $_user = 'self') {
         // Init
         $this->images   = array();
-        $this->user     = null;
-    
+        $this->user     = new stdClass();
+
         // Check if a token is provided
         if (trim($_token) != '') {
-            
+
             // Construct the API url…
             // http://instagr.am/developer/endpoints/users/
             $url = "https://api.instagram.com/v1/users/{$_user}/media/recent/?access_token={$_token}&count={$_count}";
-            
+
             // Create cache directory if it doesn't exist yet
             if ($_cache) {
                 dir::make(c::get('root.cache') . '/instagram');
             }
-            
+
             $images_cache_id    = 'instagram/images.' . md5($_token) . '.' . $_count . '.php';
             $images_cache_data  = false;
-            
+
             // Try to fetch data from cache
             if ($_cache) {
                 $images_cache_data = (cache::modified($images_cache_id) < time() - $_cache_expire) ? false : cache::get($images_cache_id);
             }
-            
+
             // Load data from the API if the cache expired or the cache is empty
             if (empty($images_cache_data)) {
                 $data   = $this->fetch_data($url);
                 $photos = json_decode($data);
-                
+
                 // Set new data for the cache
                 if ($_cache) {
                     cache::set($images_cache_id, $photos);
@@ -69,18 +69,19 @@ class instagram {
             } else {
                 $photos = $images_cache_data;
             }
-            
+
             // Process the images
             for ($i = 0; $i < $_count; $i++) {
                 if (isset($photos->data[$i]) && count($photos->data) > 0) {
-                    
+
                     // Get the user's data from the first image
                     if ($i == 0) {
-                       $this->user->username    = $photos->data[$i]->user->username; 
+                       $this->user->username    = $photos->data[$i]->user->username;
                        $this->user->full_name   = $photos->data[$i]->user->full_name;
                        $this->user->picture     = $photos->data[$i]->user->profile_picture;
                     }
-                    
+
+                    $this->images[$i] = new stdClass();
                     $this->images[$i]->link         = $photos->data[$i]->link;
                     $this->images[$i]->comments     = $photos->data[$i]->comments->count;
                     $this->images[$i]->likes        = $photos->data[$i]->likes->count;
@@ -92,26 +93,29 @@ class instagram {
                     $this->images[$i]->location     = @$photos->data[$i]->location->name;
                     $this->images[$i]->latitude     = @$photos->data[$i]->location->latitude;
                     $this->images[$i]->longitude    = @$photos->data[$i]->location->longitude;
-                    
+
                     // Process tags
+                    if ( count($photos->data[$i]->tags) > 0 ) {
+                      $this->images[$i]->tags = array();
+                    }
                     for ($j = 0; $j < count($photos->data[$i]->tags); $j++) {
                         $this->images[$i]->tags[$j] = $photos->data[$i]->tags[$j];
-                    }               
+                    }
                 }
             }
         } else {
             throw new Exception('$_token MUST be set!');
         }
     }
-    
+
     /**
      * Returns the images that were loaded from the API.
      * @return array    Array of objects containing all the photo's data.
      */
     function images() {
         return $this->images;
-    }      
-    
+    }
+
     /**
      * Returns information about the user.
      * @return object   Object with information about the user.
@@ -119,7 +123,7 @@ class instagram {
     function user() {
         return $this->user;
     }
-    
+
      /**
      * Fetches data from an url.
      * @param string    The url from where data should be fetched.
@@ -127,18 +131,18 @@ class instagram {
      */
     protected function fetch_data($url = null) {
         if (!is_null($url)) {
-            
+
             // Init CURL
-            $handler = curl_init();        
-    
+            $handler = curl_init();
+
             // CURL options
             curl_setopt($handler, CURLOPT_URL, $url);
             curl_setopt($handler, CURLOPT_RETURNTRANSFER, 1);
 
             // Load data & close connection
             $data = curl_exec($handler);
-            curl_close($handler);  
-        
+            curl_close($handler);
+
             return $data;
         }
     }
